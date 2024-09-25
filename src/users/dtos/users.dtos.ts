@@ -9,10 +9,8 @@ export class CreateUserDto {
   @IsEmail()
   email: string;
 
-  @IsEnum(['INTERN', 'ENGINEER', 'ADMIN'], {
-    message: 'Role must be INTERN, ENGINEER or ADMIN',
-  })
-  role: 'INTERN' | 'ENGINEER' | 'ADMIN';
+  @IsNotEmpty()
+  password: string;
 }
 
 // has the same property with CreateUserDto, but not required to have all

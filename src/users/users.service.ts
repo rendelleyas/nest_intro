@@ -1,87 +1,48 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateUserDto, UpdateUserDto } from './dtos/users.dtos';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserEntity } from './users.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UsersService {
-  private users = [
-    {
-      id: 1,
-      name: 'Leanne Graham',
-      email: 'Sincere@april.biz',
-      role: 'INTERN',
-    },
-    {
-      id: 2,
-      name: 'Ervin Howell',
-      email: 'Shanna@melissa.tv',
-      role: 'INTERN',
-    },
-    {
-      id: 3,
-      name: 'Clementine Bauch',
-      email: 'Nathan@yesenia.net',
-      role: 'ENGINEER',
-    },
-    {
-      id: 4,
-      name: 'Patricia Lebsack',
-      email: 'Julianne.OConner@kory.org',
-      role: 'ENGINEER',
-    },
-    {
-      id: 5,
-      name: 'Chelsey Dietrich',
-      email: 'Lucio_Hettinger@annie.ca',
-      role: 'ADMIN',
-    },
-  ];
+  constructor(
+    @InjectRepository(UserEntity)
+    private userRepository: Repository<UserEntity>,
+  ) {}
 
-  findAll(role?: 'INTERN' | 'ENGINEER' | 'ADMIN') {
-    if (role) {
-      const filteredUsers = this.users.filter((user) => user.role === role);
-
-      if (filteredUsers.length === 0)
-        throw new NotFoundException('User not found');
-
-      return filteredUsers;
-    }
-    return this.users;
+  findAll() {
+    return this.userRepository.find();
   }
 
   findOne(id: number) {
-    const user = this.users.find((user) => user.id === id);
+    const user = this.userRepository.findOne({ where: { id: id } });
 
     if (!user) throw new NotFoundException('User not found');
 
     return user;
   }
 
-  create(user: CreateUserDto) {
-    const usersByHighestId = [...this.users].sort((a, b) => b.id - a.id);
-    const newUser = {
-      id: usersByHighestId[0].id + 1,
-      ...user,
-    };
-    this.users.push(newUser);
-    return newUser;
+  async create(user: CreateUserDto) {
+    const newUser = this.userRepository.create(user);
+    return await this.userRepository.save(newUser);
   }
 
-  update(id: number, updatedUser: UpdateUserDto) {
-    this.users = this.users.map((user) => {
-      if (user.id === id) {
-        return { ...user, ...updatedUser };
-      }
-      return user;
+  async update(id: number, updatedUser: UpdateUserDto) {
+    const user = await this.userRepository.preload({
+      id: id,
+      ...updatedUser,
     });
 
-    return this.findOne(id);
+    if (!user) throw new NotFoundException('User not found');
+
+    return await this.userRepository.save(user);
   }
 
-  delete(id: number) {
-    const removedUser = this.findOne(id);
+  async delete(id: number) {
+    const user = await this.userRepository.findOne({ where: { id: id } });
+    if (!user) throw new NotFoundException('User not found');
 
-    this.users = this.users.filter((user) => user.id !== id);
-
-    return this.findAll();
+    await this.userRepository.remove(user);
   }
 }

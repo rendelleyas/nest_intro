@@ -19,7 +19,7 @@ export class UsersController {
 
   @Get()
   getUsers(@Query('role') role?: 'INTERN' | 'ENGINEER' | 'ADMIN') {
-    return this.userService.findAll(role);
+    return this.userService.findAll();
   }
 
   @Get(':id')
