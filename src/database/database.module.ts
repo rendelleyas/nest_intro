@@ -26,7 +26,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
           password: dbPassword,
           database: dbDatabase,
           synchronize: true, // Use with caution in production
-          entities: [__dirname + '/**/*.entity{.ts,.js}'],
+          entities: [__dirname + '/../**/*.entity{.ts,.js}'],
         };
       },
     }),
