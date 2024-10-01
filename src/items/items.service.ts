@@ -45,16 +45,30 @@ export class ItemsService {
   }
 
   async update(id: number, updateItemDto: UpdateItemDto) {
-    const item = await this.itemRepository.findOneBy({ id: id });
+    // const item = await this.itemRepository.findOneBy({ id: id });
 
-    const comments = updateItemDto.comments.map(
-      (createCommentDto) => new Comment(createCommentDto),
-    );
+    // const comments = updateItemDto.comments.map(
+    //   (createCommentDto) => new Comment(createCommentDto),
+    // );
 
-    item.public = updateItemDto.public;
-    item.comments = comments;
+    // item.public = updateItemDto.public;
+    // item.comments = comments;
 
-    return this.entityManager.save(item);
+    // return this.entityManager.save(item);
+
+    await this.entityManager.transaction(async (entityManager) => {
+        const item = await entityManager.findOneBy(Item, { id: id });
+
+        const comments = updateItemDto.comments.map(
+          (createCommentDto) => new Comment(createCommentDto),
+        );
+
+        item.public = updateItemDto.public;
+        item.comments = comments;
+
+        await entityManager.save(item);
+
+    });
   }
 
   async remove(id: number) {
