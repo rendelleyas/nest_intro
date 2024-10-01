@@ -1,6 +1,7 @@
 import { AbstractEntity } from 'src/database/abstract.entity';
-import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 import { Listing } from './listing.entity';
+import { Comment } from './comment.entity';
 @Entity({ name: 'items' })
 export class Item extends AbstractEntity<Item> {
   @Column()
@@ -12,4 +13,7 @@ export class Item extends AbstractEntity<Item> {
   @OneToOne(() => Listing, { cascade: true })
   @JoinColumn()
   listing: Listing;
+
+  @OneToMany(() => Comment, (comment) => comment.item, { cascade: true })
+  comments: Comment[];
 }
