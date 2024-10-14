@@ -55,4 +55,23 @@ export class AppController {
       password: hashedPassword,
     });
   }
+
+  @Post('auth/verify')
+  async verify(@Body('token') token: string) {
+    const secret = 'secret123';
+
+    if (!secret) {
+      throw new BadRequestException('JWT secret is not set');
+    }
+
+    try {
+      const decoded = await this.jwtService.verifyAsync(token, {
+        secret,
+      });
+
+      return decoded;
+    } catch (error) {
+      throw new BadRequestException('Invalid token');
+    }
+  }
 }
