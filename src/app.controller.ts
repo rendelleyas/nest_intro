@@ -58,20 +58,22 @@ export class AppController {
 
   @Post('auth/verify')
   async verify(@Body('token') token: string) {
-    const secret = 'secret123';
+    const secret = process.env.JWT_SECRET;
 
-    if (!secret) {
-      throw new BadRequestException('JWT secret is not set');
-    }
+    return 'yow!';
 
-    try {
-      const decoded = await this.jwtService.verifyAsync(token, {
-        secret,
-      });
+    // if (!secret) {
+    //   throw new BadRequestException('JWT secret is not set');
+    // }
 
-      return decoded;
-    } catch (error) {
-      throw new BadRequestException('Invalid token');
-    }
+    // try {
+    //   const decoded = await this.jwtService.verifyAsync(token, {
+    //     secret,
+    //   });
+
+    //   return decoded;
+    // } catch (error) {
+    //   throw new BadRequestException('Invalid token');
+    // }
   }
 }
